@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo">
+
+
+    <!--    <select id="selectMember" resultType="String">-->
+    <!--        select pnm from SHOP_DATA-->
+    <!--        WHERE USERID = 'dabagirl'-->
+    <!--        limit 1-->
+    <!--    </select>-->
+
+<!--    <select id="web" parameterType="java.util.HashMap" resultType="java.util.HashMap">-->
+<!--        select * from billing.SSP_ITL_STATS-->
+<!--        where STATS_DTTM = #{userid};-->
+<!--    </select>-->
+
+
+    <select id="web" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select * from billing.SSP_ITL_STATS
+        where SSP_MEDIA_SEQ IN (
+        select SSP_MEDIA_SEQ
+        from dreamsearch.SSP_MEDIA_INFO
+        join dreamsearch.SSP_ITL_INFO
+        ON SSP_MEDIA_INFO.SSP_ITL_SEQ = SSP_ITL_INFO.SSP_ITL_SEQ
+        where SSP_ITL_ID = #{userid}) and STATS_DTTM=#{pcode};
+    </select>
+
+
+    <select id="mobile" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select BIL.STATS_DTTM, BIL.EXL_ITL_SEQ, BIL.EXL_ITL_EPRS_CNT, BIL.EXL_ITL_CLICK_CNT, BIL.ADVRTS_AMT, EII.EXL_ITL_KEY
+        FROM billing.EXL_ITL_RCV_STATS AS BIL
+        INNER JOIN dreamsearch.EXL_ITL_INFO AS EII
+        ON BIL.EXL_ITL_SEQ = EII.EXL_ITL_SEQ
+        WHERE EII.EXL_ITL_SEQ IN (
+        SELECT EXL_ITL_SEQ FROM dreamsearch.EXL_ITL_INFO
+        WHERE EXL_ITL_ID = #{userid})
+        AND STATS_DTTM = #{pcode};
+
+    </select>
+
+    <select id="zoneIdList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+--         SELECT  EXL_ITL_SEQ exl_seq,
+--         ms.mediasite_no media_site,
+--         PAR_NO media_code,
+--         EXL_ITL_KEY zoneid,
+--         MEDIA_ID userid,
+--         EXL_ITL_ADDITION exl_info,
+--         EXL_ITL_ID as external_id
+--         FROM EXL_ITL_INFO exl
+--         JOIN media_script ms ON exl.PAR_NO = ms.no
+--         WHERE 1=1
+--         AND USE_YN = 'Y'
+--         AND SEND_TP_CODE = ''
+--         AND EXL_ITL_ID = #{externalId}
+--         AND PAR_NO = #{scriptNo}
+--         AND EXL_ITL_KEY = #{zoneid}
+--         AND NOT EXL_ITL_KEY LIKE ('%_old%')
+--         GROUP BY BINARY(EXL_ITL_KEY); reportModel.ExternalLinkageData
+
+        SELECT  EXL_ITL_SEQ
+        FROM EXL_ITL_INFO exl
+        WHERE USE_YN = 'N'
+        AND SEND_TP_CODE = '02'
+        AND EXL_ITL_ID = #{externalId};
+
+
+    </select>
+
+
+</mapper>
+
